@@ -2,18 +2,21 @@ import process from 'node:process'
 import type { ArgumentsCamelCase } from 'yargs'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
-import { name, version } from '../package.json'
+import updateNotifier from 'update-notifier'
+import packageJson from '../package.json'
 
 import { createTemplate } from './createTemplate'
 import { downloadGitRepo } from './download-git-repo'
 import { downloadZip } from './download-zip-repo'
 import { listTemplates } from './listTemplates'
 
+const notifier = updateNotifier({ pkg: packageJson })
+
 const ins = yargs(hideBin(process.argv))
-  .scriptName(name)
+  .scriptName(packageJson.name)
   .showHelpOnFail(true)
   .alias('h', 'help')
-  .version('version', version)
+  .version('version', packageJson.version)
   .alias('v', 'version')
 
 ins.command('generator [entry] [output]', 'generator template', argv => argv, (argv: ArgumentsCamelCase<{
@@ -40,3 +43,6 @@ ins.command('download-zip [link]', 'download zip file', argv => argv, (argv: Arg
 })
 
 ins.parse()
+
+// Notify using the built-in convenience method
+notifier.notify()
