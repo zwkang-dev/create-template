@@ -1,0 +1,66 @@
+{
+  "name": "@zwkang-dev/test-monorepo-shared",
+  "version": "0.0.1-beta.12",
+  "packageManager": "pnpm@7.9.0",
+  "description": "> description:",
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": {
+    "name": "zwkang",
+    "email": "kang95630@gmail.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zwkang/pkg-name.git"
+  },
+  "bugs": "https://github.com/zwkang/pkg-name/issues",
+  "keywords": [],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./dist/*",
+        "./dist/index.d.ts"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "tsup --watch",
+    "lint": "eslint --cache .",
+    "test": "vitest run",
+    "build": "tsup",
+    "start": "tsx src/index.ts",
+    "release": "npm publish",
+    "bump:version": "bumpp",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.12.0",
+    "@typescript-eslint/parser": "^6.12.0",
+    "bumpp": "^9.2.0",
+    "eslint": "^8.54.0",
+    "eslint-config-alloy": "^5.1.2",
+    "prettier": "^3.1.0",
+    "tsup": "^8.0.1",
+    "tsx": "^4.5.0",
+    "typescript": "^5.3.2",
+    "vitest": "^0.34.6",
+    "zwkang-prettier-config": "^0.0.3"
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "version": "0.0.1-beta.12",
+  "packageManager": "pnpm@7.9.0",
+  "description": "> description:",
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": {
+    "name": "zwkang",
+    "email": "kang95630@gmail.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zwkang/monorepo-template.git"
+  },
+  "bugs": "https://github.com/zwkang/monorepo-template/issues",
+  "keywords": [],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./dist/*",
+        "./dist/index.d.ts"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "pnpm -r --filter=./packages/** run build",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "pnpm -r --filter=./packages/** run test",
+    "build": "pnpm -r --filter=./packages/** run build",
+    "start": "pnpm -r --filter=./packages/** run start",
+    "release": "bumpp -r --all",
+    "bump:version": "bumpp",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build",
+    "publish:all": "pnpm -r publish --access public --no-git-checks"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^2.6.4",
+    "bumpp": "^9.2.0",
+    "eslint": "^8.57.0",
+    "prettier": "^3.1.0",
+    "tsup": "^8.0.1",
+    "tsx": "^4.5.0",
+    "typescript": "^5.3.2",
+    "vitest": "^0.34.6",
+    "zwkang-prettier-config": "^0.0.3"
+  }
+}
