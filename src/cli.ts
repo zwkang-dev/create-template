@@ -2,7 +2,7 @@ import process from 'node:process'
 import type { ArgumentsCamelCase } from 'yargs'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
-import { version } from '../package.json'
+import { name, version } from '../package.json'
 
 import { createTemplate } from './createTemplate'
 import { downloadGitRepo } from './download-git-repo'
@@ -10,7 +10,7 @@ import { downloadZip } from './download-zip-repo'
 import { listTemplates } from './listTemplates'
 
 const ins = yargs(hideBin(process.argv))
-  .scriptName('pkg-name')
+  .scriptName(name)
   .showHelpOnFail(true)
   .alias('h', 'help')
   .version('version', version)

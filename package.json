@@ -1,9 +1,9 @@
 {
-  "name": "zwkang-templates",
+  "name": "@zwkang-dev/create-template",
   "type": "module",
   "version": "0.0.0",
   "packageManager": "pnpm@8.11.0",
-  "description": "> description:",
+  "description": "> a simple template manager",
   "publishConfig": {
     "access": "public"
   },
@@ -23,7 +23,7 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "bin": {
-    "z-template": "bin/entry.mjs"
+    "zct": "bin/entry.mjs"
   },
   "files": [
     "dist"
