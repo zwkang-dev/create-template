@@ -1,5 +1,4 @@
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
 import process from 'node:process'
 import fs from 'node:fs/promises'
 import { globby } from 'globby'
@@ -19,8 +18,8 @@ interface IProps {
 
 const progress = ora('Creating template...')
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+// const __filename = fileURLToPath(import.meta.url)
+// const __dirname = path.dirname(__filename)
 const __current = process.cwd()
 
 /**
