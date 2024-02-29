@@ -9,11 +9,12 @@ import { createTemplate } from './createTemplate'
 import { downloadGitRepo } from './download-git-repo'
 import { downloadZip } from './download-zip-repo'
 import { listTemplates } from './listTemplates'
+import { SCRIPT_NAME } from './constant'
 
 const notifier = updateNotifier({ pkg: packageJson })
 
 const ins = yargs(hideBin(process.argv))
-  .scriptName(packageJson.name)
+  .scriptName(SCRIPT_NAME)
   .showHelpOnFail(true)
   .alias('h', 'help')
   .version('version', packageJson.version)

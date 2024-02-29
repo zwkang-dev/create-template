@@ -11,7 +11,10 @@ const schema = [
 ]
 
 export async function checkExist(folderPath: string) {
-  await fsExtra.exists(folderPath)
+  const res = await fsExtra.exists(folderPath)
+
+  if (!res)
+    return
   const { overwrite } = await inquirer.prompt(schema)
 
   if (overwrite)

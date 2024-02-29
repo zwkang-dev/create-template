@@ -5,7 +5,8 @@ import fetch from 'node-fetch'
 import { linkExists } from 'link-exists'
 import AdmZip from 'adm-zip'
 import { getCacheFolder, getName } from './share'
-import { checkExist } from './checkExist'
+import { DOWNLOAD_FOLDER, TEMPORARY_UNZIP_FOLDER } from './constant'
+import { moveConfirm } from './removeConfirm'
 
 export interface FileStat {
   name: string
@@ -26,6 +27,11 @@ export function readDirWithFileTypes(folder: string): FileStat[] {
   return res
 }
 
+interface IOptions {
+  aliasName?: string
+  extractDeep?: boolean
+}
+
 /**
  * download zip file
  * 1. download zip file in temp folder (default: .oneLight_cli)
@@ -33,28 +39,29 @@ export function readDirWithFileTypes(folder: string): FileStat[] {
  * 3. remove zip file
  * done
  */
-export async function downloadZip(url: string) {
+export async function downloadZip(url: string, options: IOptions = {}) {
   if (!await linkExists(url))
     console.error('url is not exist')
+  const { aliasName } = options
   const cachePath = getCacheFolder()
   const timeStamp = new Date().getTime()
   const name = getName(url)
-  const downloadsPath = path.join(cachePath, 'downloads')
-  const zipPath = path.join(cachePath, `temp${timeStamp}.zip`)
-  const extractPath = path.join(downloadsPath, name)
-  await checkExist(extractPath)
+  const downloadsPath = path.join(cachePath, DOWNLOAD_FOLDER)
+  const templateUnzipPath = aliasName ? path.join(cachePath, TEMPORARY_UNZIP_FOLDER, aliasName) : path.join(cachePath, TEMPORARY_UNZIP_FOLDER, name)
+  const zipPath = path.join(downloadsPath, `temp${timeStamp}.zip`)
   await fs.ensureDir(downloadsPath)
-
+  await fs.ensureDir(templateUnzipPath)
   // fetch zip file
   await fetch(url).then((response) => {
     response.body?.pipe(createWriteStream(zipPath)).on('close', async () => {
       // unzip file
       const zip = new AdmZip(zipPath)
-      await zip.extractAllTo(extractPath, true)
+      await zip.extractAllTo(templateUnzipPath, true)
 
-      await fs.move(extractPath, cachePath /** { overwrite: true } */)
-      // remove zip file
+      await moveConfirm(templateUnzipPath, cachePath)
+      // // // remove zip file
       await fs.remove(zipPath)
+      await fs.remove(templateUnzipPath)
     })
   })
 
