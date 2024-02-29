@@ -2,6 +2,7 @@ import path from 'node:path'
 import fsExtra from 'fs-extra'
 import { name } from '../package.json'
 import { homeOrTemp } from './tmpPath'
+import { IGNORE_LIST_FOLDER } from './constant'
 
 const mark = /&j&/
 
@@ -15,10 +16,11 @@ export function getCacheFolder() {
 
 export async function getAllTemplates() {
   const cachePath = getCacheFolder()
-
   const files = await fsExtra.readdir(cachePath)
   const templates = files.filter((file) => {
     const [name, version] = file.split(mark)
+    if (IGNORE_LIST_FOLDER.includes(name))
+      return false
     return {
       name,
       version,
