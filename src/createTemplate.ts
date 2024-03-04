@@ -5,18 +5,18 @@ import { globby } from 'globby'
 
 import fsExtra from 'fs-extra'
 import { template } from 'lodash-es'
-import ora from 'ora'
+import colors from 'picocolors'
 
 import inquirer from 'inquirer'
+import { logger } from 'rslog'
 import { getCacheFolder } from './share'
+import { checkInstall } from './checkInstall'
 
 interface IProps {
   entry: string
   outputDir: string
   emptyDir?: boolean
 }
-
-const progress = ora('Creating template...')
 
 // const __filename = fileURLToPath(import.meta.url)
 // const __dirname = path.dirname(__filename)
@@ -49,7 +49,7 @@ const defaultConfig: {
 }
 
 export async function createTemplate(props: IProps) {
-  const ins = progress.start()
+  logger.greet(`\n🚀  Welcome to use zwkang generator\n`)
   const { entry, outputDir, emptyDir = true } = props
   const cachePath = getCacheFolder()
   const entryFolder = path.join(cachePath, entry)
@@ -62,13 +62,13 @@ export async function createTemplate(props: IProps) {
   if (existConfigFile)
     configFile = (await import(path.join(entryFolder, zwkangTemplateFile))).default
 
-  const { prompt = [], schema = null, onEnd, name = '' } = configFile
+  const { prompt = [], schema = null, onEnd } = configFile
   const answer = await inquirer.prompt(prompt)
   if (schema) {
     const validator = schema.safeParse(answer)
 
     if (!validator.success)
-      console.error(validator.error)
+      logger.error(validator.error)
   }
 
   const outputFolder = path.join(__current, outputDir)
@@ -77,11 +77,8 @@ export async function createTemplate(props: IProps) {
 
   await fsExtra.ensureDir(outputFolder)
 
-  let idx = 0
-
+  logger.info(`🚀  Start creating template ${colors.yellow(entry)}\n`)
   for (const item of entryFiles) {
-    idx += 1
-    const present = ((idx / entryFiles.length) * 100).toFixed(0)
     const entryFilePath = path.join(entryFolder, item)
     const outputFilePath = path.join(outputFolder, item)
     const isDir = await fs.stat(entryFilePath)
@@ -92,15 +89,15 @@ export async function createTemplate(props: IProps) {
       const content = await fs.readFile(entryFilePath, 'utf-8')
       const compiled = template(content)
       const compiledContent = compiled(answer)
-      ins.text = `${present}% writing ${outputFilePath}`
       await fsExtra.ensureFile(outputFilePath)
       await fs.writeFile(outputFilePath, compiledContent)
     }
   }
 
-  ins.succeed(`thanks using template ${name}`)
+  const { packageManager = 'pnpm' } = await checkInstall({ dest: outputFolder })
+
+  logger.success(`🚀  Successfully created ${colors.green(entry)}\n`)
+  logger.success(`Run ${colors.green(`cd ${outputDir} && ${packageManager} && ${packageManager} dev`)} to start development!\n`)
   if (onEnd)
     onEnd?.()
-
-  ins.stop()
 }

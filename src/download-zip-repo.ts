@@ -4,6 +4,8 @@ import fs from 'fs-extra'
 import fetch from 'node-fetch'
 import { linkExists } from 'link-exists'
 import AdmZip from 'adm-zip'
+import { logger } from 'rslog'
+import colors from 'picocolors'
 import { getCacheFolder, getName } from './share'
 import { DOWNLOAD_FOLDER, TEMPORARY_UNZIP_FOLDER } from './constant'
 import { moveConfirm } from './removeConfirm'
@@ -51,13 +53,15 @@ export async function downloadZip(url: string, options: IOptions = {}) {
   const zipPath = path.join(downloadsPath, `temp${timeStamp}.zip`)
   await fs.ensureDir(downloadsPath)
   await fs.ensureDir(templateUnzipPath)
+  logger.info(`🚀  Start download template from ${url}`)
   // fetch zip file
   await fetch(url).then((response) => {
     response.body?.pipe(createWriteStream(zipPath)).on('close', async () => {
       // unzip file
       const zip = new AdmZip(zipPath)
       await zip.extractAllTo(templateUnzipPath, true)
-
+      logger.info(`🎉  Download template ${aliasName || name} success`)
+      logger.info(`🚀  Start generator, ${colors.green(`zct generator ${aliasName || name} [output]`)}`)
       await moveConfirm(templateUnzipPath, cachePath)
       // // // remove zip file
       await fs.remove(zipPath)
