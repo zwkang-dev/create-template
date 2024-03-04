@@ -9,7 +9,7 @@ import colors from 'picocolors'
 
 import inquirer from 'inquirer'
 import { logger } from 'rslog'
-import { getCacheFolder } from './share'
+import { getCacheFolder, resolveTemplate } from './share'
 import { checkInstall } from './checkInstall'
 
 interface IProps {
@@ -48,14 +48,23 @@ const defaultConfig: {
   name: '',
 }
 
+export async function replaceContent(content: string, obj: Record<string, any>) {
+  Object.keys(obj).forEach((key) => {
+    const regexp = new RegExp(`<%= ${key} %>`, 'g')
+    content = content.replace(regexp, obj[key])
+  })
+
+  return content
+}
+
 export async function createTemplate(props: IProps) {
   logger.greet(`\n🚀  Welcome to use zwkang generator\n`)
   const { entry, outputDir, emptyDir = true } = props
-  const cachePath = getCacheFolder()
-  const entryFolder = path.join(cachePath, entry)
+  const entryFolder = await resolveTemplate(entry)
   const entryFiles = await globby(['**/*'], {
     cwd: entryFolder,
     gitignore: true,
+    dot: true,
   })
   let configFile = defaultConfig
   const existConfigFile = await fsExtra.exists(path.join(entryFolder, zwkangTemplateFile))
@@ -87,15 +96,14 @@ export async function createTemplate(props: IProps) {
     }
     else {
       const content = await fs.readFile(entryFilePath, 'utf-8')
-      const compiled = template(content)
-      const compiledContent = compiled(answer)
       await fsExtra.ensureFile(outputFilePath)
+      const compiledContent = await replaceContent(content, answer)
       await fs.writeFile(outputFilePath, compiledContent)
     }
   }
 
   const { packageManager = 'pnpm' } = await checkInstall({ dest: outputFolder })
-
+  console.log()
   logger.success(`🚀  Successfully created ${colors.green(entry)}\n`)
   logger.success(`Run ${colors.green(`cd ${outputDir} && ${packageManager} && ${packageManager} dev`)} to start development!\n`)
   if (onEnd)
