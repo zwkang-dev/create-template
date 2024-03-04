@@ -2,7 +2,7 @@ import path from 'node:path'
 import fsExtra from 'fs-extra'
 import { name } from '../package.json'
 import { homeOrTemp } from './tmpPath'
-import { IGNORE_LIST_FOLDER } from './constant'
+import { IGNORE_LIST_FOLDER, dirname } from './constant'
 
 const mark = /&j&/
 
@@ -14,11 +14,25 @@ export function getCacheFolder() {
   return cachePath
 }
 
-export async function getAllTemplates() {
-  const cachePath = getCacheFolder()
-  const files = await fsExtra.readdir(cachePath)
-  const templates = files.filter((file) => {
-    const [name, version] = file.split(mark)
+export function getInternalTemplatePath() {
+  return path.join(dirname, '../internal-templates')
+}
+
+export async function resolveTemplate(templateName: string) {
+  const cacheFolder = getCacheFolder()
+  const internalFolder = getInternalTemplatePath()
+  // 优先取用户自定义模版
+  const cacheTemplate = path.join(cacheFolder, templateName)
+  const templateExist = await fsExtra.exists(cacheTemplate)
+  if (templateExist)
+    return cacheTemplate
+  return internalFolder
+}
+
+export async function getFolders(folderPath: string) {
+  const folders = await fsExtra.readdir(folderPath)
+  const templates = folders?.filter((folders) => {
+    const [name, version] = folders.split(mark)
     if (IGNORE_LIST_FOLDER.includes(name))
       return false
     return {
@@ -27,7 +41,17 @@ export async function getAllTemplates() {
     }
   })
 
-  return templates
+  return templates ?? []
+}
+
+export async function getInternalTemplateFolder() {
+  const templateFolder = path.join(dirname, '../internal-templates')
+  return await getFolders(templateFolder)
+}
+
+export async function getAllTemplates() {
+  const cachePath = getCacheFolder()
+  return await getFolders(cachePath)
 }
 
 export function removeExtname(filePath: string) {
