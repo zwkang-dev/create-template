@@ -4,12 +4,11 @@ import fs from 'node:fs/promises'
 import { globby } from 'globby'
 
 import fsExtra from 'fs-extra'
-import { template } from 'lodash-es'
 import colors from 'picocolors'
 
 import inquirer from 'inquirer'
 import { logger } from 'rslog'
-import { getCacheFolder, resolveTemplate } from './share'
+import { resolveTemplate } from './share'
 import { checkInstall } from './checkInstall'
 
 interface IProps {
