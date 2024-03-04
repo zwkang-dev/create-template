@@ -10,6 +10,7 @@ import { downloadGitRepo } from './download-git-repo'
 import { downloadZip } from './download-zip-repo'
 import { listTemplates } from './listTemplates'
 import { SCRIPT_NAME } from './constant'
+import { removeTemplate } from './removeTemplate'
 
 const notifier = updateNotifier({ pkg: packageJson })
 
@@ -33,6 +34,10 @@ ins.command('generator [entry] [output]', 'generator template', argv => argv, (a
 
 ins.command('list-template', 'list all template', argv => argv, () => {
   listTemplates()
+})
+
+ins.command(`remove-template [name]`, 'remove template', argv => argv, (argv: ArgumentsCamelCase<{ name: string }>) => {
+  removeTemplate(argv.name)
 })
 
 ins.command('download-git [link]', 'download git repo', argv => argv, (argv: ArgumentsCamelCase<{ link: string }>) => {
