@@ -1,7 +1,7 @@
 {
   "name": "@zwkang-dev/create-template",
   "type": "module",
-  "version": "0.0.1-beta.8",
+  "version": "0.0.1-beta.9",
   "packageManager": "pnpm@8.11.0",
   "description": "> a simple template manager",
   "publishConfig": {
