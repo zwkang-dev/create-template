@@ -48,6 +48,7 @@
     "@types/ramda": "^0.29.10",
     "@types/update-notifier": "^6.0.8",
     "adm-zip": "^0.5.10",
+    "esbuild": "^0.20.1",
     "fs-extra": "^11.2.0",
     "globby": "^14.0.1",
     "inquirer": "^9.2.15",

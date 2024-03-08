@@ -1,1 +1,1 @@
-export const name = 'pkg-name'
+export * from './defineConfig'

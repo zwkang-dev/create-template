@@ -1,4 +1,4 @@
-import path from 'node:path'
+import path, { basename } from 'node:path'
 import process from 'node:process'
 import fs from 'node:fs/promises'
 import { globby } from 'globby'
@@ -10,6 +10,10 @@ import inquirer from 'inquirer'
 import { logger } from 'rslog'
 import { resolveTemplate } from './share'
 import { checkInstall } from './checkInstall'
+import { initTemplate } from './initTemplate'
+import type { IConfig } from './defineConfig'
+import { loggerZodError } from './loggerZodError'
+import { IGNORE_FILES } from './constant'
 
 interface IProps {
   entry: string
@@ -33,18 +37,25 @@ const __current = process.cwd()
  *
  */
 
-const zwkangTemplateFile = 'zwkang.template.config.ts'
+/**
+ * template struct
+ *
+ * 模版的结构
+ *
+ * - template
+ * - zwkang.template.config.ts
+ * - README.md
+ * - package.json
+ *
+ */
 
-const defaultConfig: {
-  prompt: any[]
-  schema: any
-  onEnd: any
-  name: string
-} = {
-  prompt: [],
-  schema: null,
-  onEnd: null,
-  name: '',
+const zwkangTemplateFile = 'zwkang.config.ts'
+
+const defaultConfig: Partial<IConfig> = {
+  prompts: [],
+  schema: undefined,
+  onEnd: undefined,
+  name: undefined,
 }
 
 export async function replaceContent(content: string, obj: Record<string, any>) {
@@ -54,6 +65,13 @@ export async function replaceContent(content: string, obj: Record<string, any>) 
   })
 
   return content
+}
+
+function handleFnOrValue<T>(cb: T) {
+  if (typeof cb === 'function')
+    return cb()
+
+  return cb
 }
 
 export async function createTemplate(props: IProps) {
@@ -66,17 +84,19 @@ export async function createTemplate(props: IProps) {
     dot: true,
   })
   let configFile = defaultConfig
-  const existConfigFile = await fsExtra.exists(path.join(entryFolder, zwkangTemplateFile))
+  const existConfigFile = await fsExtra.exists(path.join(entryFolder, entry, zwkangTemplateFile))
   if (existConfigFile)
-    configFile = (await import(path.join(entryFolder, zwkangTemplateFile))).default
+    configFile = await initTemplate({ entry: path.join(entryFolder, entry) })
 
-  const { prompt = [], schema = null, onEnd } = configFile
-  const answer = await inquirer.prompt(prompt)
+  const { prompts = [], schema = null, onEnd } = configFile
+  const answer = await inquirer.prompt(handleFnOrValue(prompts))
   if (schema) {
     const validator = schema.safeParse(answer)
 
-    if (!validator.success)
-      logger.error(validator.error)
+    if (!validator.success) {
+      loggerZodError(validator.error)
+      return
+    }
   }
 
   const outputFolder = path.join(__current, outputDir)
@@ -87,6 +107,9 @@ export async function createTemplate(props: IProps) {
 
   logger.info(`🚀  Start creating template ${colors.yellow(entry)}\n`)
   for (const item of entryFiles) {
+    if (IGNORE_FILES.includes(basename(item)))
+      continue
+
     const entryFilePath = path.join(entryFolder, item)
     const outputFilePath = path.join(outputFolder, item)
     const isDir = await fs.stat(entryFilePath)
