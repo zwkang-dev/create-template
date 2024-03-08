@@ -1,5 +1,5 @@
 {
-  "name": "zwk-pkg-name",
+  "name": "<%= name %>",
   "version": "0.0.0",
   "packageManager": "pnpm@7.9.0",
   "description": "> description:",
@@ -12,9 +12,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/zwkang/pkg-name.git"
+    "url": "git+https://github.com/<%= user %>/<%= name %>.git"
   },
-  "bugs": "https://github.com/zwkang/pkg-name/issues",
+  "bugs": "https://github.com/<%= user %>/<%= name %>/issues",
   "keywords": [],
   "sideEffects": false,
   "exports": {
