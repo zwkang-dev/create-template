@@ -21,12 +21,15 @@ export function getInternalTemplatePath() {
 export async function resolveTemplate(templateName: string) {
   const cacheFolder = getCacheFolder()
   const internalFolder = getInternalTemplatePath()
-  // 优先取用户自定义模版
+  // 优先取缓存自定义模版
   const cacheTemplate = path.join(cacheFolder, templateName)
   const templateExist = await fsExtra.exists(cacheTemplate)
   if (templateExist)
     return cacheTemplate
-  return internalFolder
+
+  const internalTemplate = path.join(internalFolder, templateName)
+  const internalExist = await fsExtra.exists(internalTemplate)
+  return internalExist ? internalTemplate : ''
 }
 
 export async function getFolders(folderPath: string) {
