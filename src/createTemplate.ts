@@ -86,9 +86,10 @@ export async function createTemplate(props: IProps) {
     dot: true,
   })
   let configFile = defaultConfig
-  const existConfigFile = await fsExtra.exists(path.join(entryFolder, entry, zwkangTemplateFile))
+  const existConfigFile = await fsExtra.exists(path.join(entryFolder, zwkangTemplateFile))
+
   if (existConfigFile)
-    configFile = await initTemplate({ entry: path.join(entryFolder, entry) })
+    configFile = await initTemplate({ entry: path.join(entryFolder) })
 
   const { prompts = [], schema = null, onEnd, customReplace, name } = configFile
   const cacheAnswer = get<Record<string, any>>(name!) || {}
