@@ -11,6 +11,7 @@ import { downloadZip } from './download-zip-repo'
 import { listTemplates } from './listTemplates'
 import { SCRIPT_NAME } from './constant'
 import { removeTemplate } from './removeTemplate'
+import { loadALocalTemplate } from './loadALocalTemplate'
 
 const notifier = updateNotifier({ pkg: packageJson })
 
@@ -38,6 +39,10 @@ ins.command('list-template', 'list all template', argv => argv, () => {
 
 ins.command(`remove-template [name]`, 'remove template', argv => argv, (argv: ArgumentsCamelCase<{ name: string }>) => {
   removeTemplate(argv.name)
+})
+
+ins.command(`load-template [path]`, `load a local template`, argv => argv, (argv: ArgumentsCamelCase<{ path: string }>) => {
+  loadALocalTemplate(argv.path)
 })
 
 ins.command('download-git [link]', 'download git repo', argv => argv, (argv: ArgumentsCamelCase<{ link: string }>) => {
