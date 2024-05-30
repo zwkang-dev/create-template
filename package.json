@@ -37,7 +37,7 @@
     "build": "tsup",
     "start": "tsx src/index.ts",
     "release": "pnpm publish",
-    "bump:version": "bumpp && release",
+    "bump:version": "bumpp",
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "pnpm run build"
   },
