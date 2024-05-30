@@ -53,6 +53,7 @@
     "fs-extra": "^11.2.0",
     "globby": "^14.0.1",
     "inquirer": "^9.2.15",
+    "json-configure": "0.0.1-beta.6",
     "link-check": "^5.2.0",
     "link-exists": "^1.2.2",
     "lodash-es": "^4.17.21",

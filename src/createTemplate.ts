@@ -14,6 +14,8 @@ import { initTemplate } from './initTemplate'
 import type { IConfig } from './defineConfig'
 import { loggerZodError } from './loggerZodError'
 import { IGNORE_FILES } from './constant'
+import { get, set } from './answerCache'
+import { travelPromptTreeAppendResult } from './util'
 
 interface IProps {
   entry: string
@@ -88,8 +90,12 @@ export async function createTemplate(props: IProps) {
   if (existConfigFile)
     configFile = await initTemplate({ entry: path.join(entryFolder, entry) })
 
-  const { prompts = [], schema = null, onEnd, customReplace } = configFile
-  const answer = await inquirer.prompt(handleFnOrValue(prompts))
+  const { prompts = [], schema = null, onEnd, customReplace, name } = configFile
+  const cacheAnswer = get<Record<string, any>>(name!) || {}
+  const answer = await inquirer.prompt(
+    travelPromptTreeAppendResult(handleFnOrValue(prompts), cacheAnswer),
+  )
+  set(name!, answer)
   if (schema) {
     const validator = schema.safeParse(answer)
 
