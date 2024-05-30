@@ -23,7 +23,8 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "bin": {
-    "zct": "bin/entry.mjs"
+    "zct": "bin/entry.mjs",
+    "z-create-template": "bin/entry.mjs"
   },
   "files": [
     "dist"
