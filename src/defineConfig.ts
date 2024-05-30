@@ -1,19 +1,24 @@
 import type { Schema } from 'zod'
 
-import type { QuestionCollection } from 'inquirer'
+import type { Answers, QuestionCollection } from 'inquirer'
 
-export interface IConfig {
+export interface IConfig<Result extends Answers = any> {
   name: string
 
   schema: Pick<Schema, 'safeParse'>
 
-  prompts: (() => QuestionCollection[]) | QuestionCollection[]
+  prompts: (() => QuestionCollection<Result>[]) | QuestionCollection<Result>[]
 
   onEnd: () => void | Promise<void>
 
   afterCustomCommand: string
+
+  customReplace: (
+    content: string,
+    obj: Result
+  ) => Promise<string> | string
 }
 
-export async function defineConfig(config: Partial<IConfig>) {
+export async function defineConfig<T extends Answers = any>(config: Partial<IConfig<T>>) {
   return config
 }

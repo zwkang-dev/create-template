@@ -88,7 +88,7 @@ export async function createTemplate(props: IProps) {
   if (existConfigFile)
     configFile = await initTemplate({ entry: path.join(entryFolder, entry) })
 
-  const { prompts = [], schema = null, onEnd } = configFile
+  const { prompts = [], schema = null, onEnd, customReplace } = configFile
   const answer = await inquirer.prompt(handleFnOrValue(prompts))
   if (schema) {
     const validator = schema.safeParse(answer)
@@ -119,7 +119,7 @@ export async function createTemplate(props: IProps) {
     else {
       const content = await fs.readFile(entryFilePath, 'utf-8')
       await fsExtra.ensureFile(outputFilePath)
-      const compiledContent = await replaceContent(content, answer)
+      const compiledContent = customReplace ? await customReplace(content, answer) : await replaceContent(content, answer)
       await fs.writeFile(outputFilePath, compiledContent)
     }
   }
