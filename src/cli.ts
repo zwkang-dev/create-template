@@ -10,7 +10,7 @@ import {
   downloadGitCommand,
   downloadZipCommand,
   generatorCommand,
-  listTemplateCommand,
+  listTemplatesCommand,
   loadGitCommand,
   loadTemplateCommand,
   removeTemplateCommand,
@@ -30,7 +30,7 @@ ins
   .command(downloadGitCommand)
   .command(downloadZipCommand)
   .command(generatorCommand)
-  .command(listTemplateCommand)
+  .command(listTemplatesCommand)
   .command(removeTemplateCommand)
   .command(loadGitCommand)
   .parse()
