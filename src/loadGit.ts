@@ -1,7 +1,7 @@
 import { downloadGitRepo } from './download-git-repo'
 
 function buildGithubLink(repo: string) {
-  return `https://github.com/${repo}.git`
+  return `https://github.com/${repo}`
 }
 
 interface Args {
