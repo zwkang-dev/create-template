@@ -11,6 +11,7 @@ import {
   downloadZipCommand,
   generatorCommand,
   listTemplateCommand,
+  loadGitCommand,
   loadTemplateCommand,
   removeTemplateCommand,
 } from './commands'
@@ -31,6 +32,7 @@ ins
   .command(generatorCommand)
   .command(listTemplateCommand)
   .command(removeTemplateCommand)
+  .command(loadGitCommand)
   .parse()
 
 // Notify using the built-in convenience method

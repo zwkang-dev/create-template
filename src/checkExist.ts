@@ -14,9 +14,13 @@ export async function checkExist(folderPath: string) {
   const res = await fsExtra.exists(folderPath)
 
   if (!res)
-    return
+    return res
   const { overwrite } = await inquirer.prompt(schema)
 
-  if (overwrite)
+  if (overwrite) {
     await fsExtra.remove(folderPath)
+    return false
+  }
+
+  return res
 }

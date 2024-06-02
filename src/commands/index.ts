@@ -9,3 +9,5 @@ export * from './downloadZip'
 export * from './listTemplate'
 
 export * from './removeTemplate'
+
+export * from './loadGit'
