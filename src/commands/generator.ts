@@ -5,6 +5,7 @@ interface Args {
   output: string
   entry: string
   internal: boolean
+  emptyDest: boolean
 }
 
 export const generatorCommand: YargsCommandModule<{}, Args> = {
@@ -16,12 +17,12 @@ export const generatorCommand: YargsCommandModule<{}, Args> = {
       type: 'boolean',
       default: false,
     },
-  ),
-  handler: async ({ output, entry, internal }) => {
+  ).option('emptyDest', { type: 'boolean', default: true, alias: 'empty-dest' }),
+  handler: async ({ output, entry, internal, emptyDest }) => {
     return await createTemplate({
       entry,
       outputDir: output,
-      emptyDir: true,
+      emptyDest,
       internal,
     })
   },

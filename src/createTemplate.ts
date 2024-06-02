@@ -21,7 +21,7 @@ import { createFilter } from './createFilter'
 interface IProps {
   entry: string
   outputDir: string
-  emptyDir?: boolean
+  emptyDest?: boolean
   internal?: boolean
 }
 
@@ -82,7 +82,7 @@ function handleFnOrValue<T>(cb: T) {
 
 export async function createTemplate(props: IProps) {
   logger.greet(`\n🚀  Welcome to use zwkang generator\n`)
-  const { entry, outputDir, emptyDir = true, internal = false } = props
+  const { entry, outputDir, emptyDest = true, internal = false } = props
   const entryFolder = await resolveTemplate(entry, { internal })
   const entryFiles = await globby(['**/*'], {
     cwd: entryFolder,
@@ -116,7 +116,7 @@ export async function createTemplate(props: IProps) {
   }
 
   const outputFolder = path.join(__current, outputDir)
-  if (emptyDir)
+  if (emptyDest)
     await fsExtra.emptyDir(outputFolder)
 
   await fsExtra.ensureDir(outputFolder)
