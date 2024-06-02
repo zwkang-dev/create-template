@@ -18,18 +18,24 @@ export function getInternalTemplatePath() {
   return path.join(dirname, '../internal-templates')
 }
 
-export async function resolveTemplate(templateName: string) {
+export async function resolveTemplate(templateName: string, opts?: { internal: boolean }) {
+  const { internal = false } = opts || {}
   const cacheFolder = getCacheFolder()
   const internalFolder = getInternalTemplatePath()
   // 优先取缓存自定义模版
   const cacheTemplate = path.join(cacheFolder, templateName)
   const templateExist = await fsExtra.exists(cacheTemplate)
-  if (templateExist)
-    return cacheTemplate
+  // if (templateExist)
+  //   return cacheTemplate
 
   const internalTemplate = path.join(internalFolder, templateName)
   const internalExist = await fsExtra.exists(internalTemplate)
-  return internalExist ? internalTemplate : ''
+  // return internalExist ? internalTemplate : ''
+
+  if (internal)
+    return internalExist ? internalTemplate : templateExist ? cacheTemplate : ''
+
+  return templateExist ? cacheTemplate : internalExist ? internalTemplate : ''
 }
 
 export async function getFolders(folderPath: string) {

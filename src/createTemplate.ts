@@ -22,6 +22,7 @@ interface IProps {
   entry: string
   outputDir: string
   emptyDir?: boolean
+  internal?: boolean
 }
 
 // const __filename = fileURLToPath(import.meta.url)
@@ -81,8 +82,8 @@ function handleFnOrValue<T>(cb: T) {
 
 export async function createTemplate(props: IProps) {
   logger.greet(`\n🚀  Welcome to use zwkang generator\n`)
-  const { entry, outputDir, emptyDir = true } = props
-  const entryFolder = await resolveTemplate(entry)
+  const { entry, outputDir, emptyDir = true, internal = false } = props
+  const entryFolder = await resolveTemplate(entry, { internal })
   const entryFiles = await globby(['**/*'], {
     cwd: entryFolder,
     gitignore: true,

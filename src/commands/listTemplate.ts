@@ -1,4 +1,3 @@
-/* eslint-disable ts/ban-types */
 import type { CommandModule as YargsCommandModule } from 'yargs'
 import { listTemplates } from '../listTemplates'
 
@@ -6,8 +5,8 @@ interface Args {
 }
 
 export const listTemplateCommand: YargsCommandModule<{}, Args> = {
-  command: 'load-template [path]',
-  describe: 'load a local template',
+  command: 'list-templates [path]',
+  describe: 'list templates',
   builder: args => args,
   handler: () => {
     listTemplates()
