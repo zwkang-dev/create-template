@@ -5,20 +5,21 @@ import { installTemplateDeps } from './installTemplateDeps'
 import { getSettingConfig } from './buildConfigFile'
 
 interface IOpts {
-  entry: string
+  configFile: string
 }
 
 export async function initTemplate(opts: IOpts) {
-  const { entry } = opts
+  const { configFile } = opts
 
-  const nodeModulesExist = await fsExtra.pathExists(path.join(entry, 'node_modules'))
+  const storagePath = await path.dirname(configFile)
+  const nodeModulesExist = await fsExtra.pathExists(path.join(storagePath, 'node_modules'))
   if (!nodeModulesExist) {
     await installTemplateDeps({
-      entry,
+      entry: storagePath,
     })
   }
   const config = await getSettingConfig({
-    entry,
+    entry: storagePath,
     fileName: SETTING_FILE,
   })
 

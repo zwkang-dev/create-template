@@ -13,9 +13,10 @@ import { checkInstall } from './checkInstall'
 import { initTemplate } from './initTemplate'
 import type { IConfig } from './defineConfig'
 import { loggerZodError } from './loggerZodError'
-import { IGNORE_FILES } from './constant'
+import { IGNORE_FILES, IGNORE_GLOB } from './constant'
 import { get, set } from './answerCache'
-import { travelPromptTreeAppendResult } from './util'
+import { resolveConfigFile, travelPromptTreeAppendResult } from './util'
+import { createFilter } from './createFilter'
 
 interface IProps {
   entry: string
@@ -45,18 +46,20 @@ const __current = process.cwd()
  * 模版的结构
  *
  * - template
- * - zwkang.template.config.ts
+ * - ._template_config
+ *   - delta.config.ts
  * - README.md
  * - package.json
  *
  */
 
-const zwkangTemplateFile = 'zwkang.config.ts'
+function noop() {}
 
 const defaultConfig: Partial<IConfig> = {
   prompts: [],
   schema: undefined,
-  onEnd: undefined,
+  onEnd: noop,
+  onBefore: noop,
   name: undefined,
 }
 
@@ -86,11 +89,16 @@ export async function createTemplate(props: IProps) {
     dot: true,
   })
   let configFile = defaultConfig
-  const existConfigFile = await fsExtra.exists(path.join(entryFolder, zwkangTemplateFile))
+  const configFilePath = await resolveConfigFile(entryFolder)
 
-  if (existConfigFile)
-    configFile = await initTemplate({ entry: path.join(entryFolder) })
+  if (configFilePath !== null)
+    configFile = await initTemplate({ configFile: configFilePath })
 
+  const filters = createFilter([...IGNORE_GLOB, ...configFile.exclude || []])
+
+  const filterEntryFiles = entryFiles.filter(
+    filters,
+  )
   const { prompts = [], schema = null, onEnd, customReplace, name } = configFile
   const cacheAnswer = get<Record<string, any>>(name!) || {}
   const answer = await inquirer.prompt(
@@ -113,7 +121,7 @@ export async function createTemplate(props: IProps) {
   await fsExtra.ensureDir(outputFolder)
 
   logger.info(`🚀  Start creating template ${colors.yellow(entry)}\n`)
-  for (const item of entryFiles) {
+  for (const item of filterEntryFiles) {
     if (IGNORE_FILES.includes(basename(item)))
       continue
 

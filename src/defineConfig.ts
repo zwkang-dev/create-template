@@ -9,7 +9,14 @@ export interface IConfig<Result extends Answers = any> {
 
   prompts: (() => QuestionCollection<Result>[]) | QuestionCollection<Result>[]
 
-  onEnd: () => void | Promise<void>
+  onEnd: (args?: {
+    dest: string
+    template: string
+  }) => void | Promise<void>
+  onBefore: (args?: {
+    dest: string
+    template: string
+  }) => void | Promise<void>
 
   afterCustomCommand: string
 
@@ -17,6 +24,8 @@ export interface IConfig<Result extends Answers = any> {
     content: string,
     obj: Result
   ) => Promise<string> | string
+
+  exclude: string[]
 }
 
 export async function defineConfig<T extends Answers = any>(config: Partial<IConfig<T>>) {
