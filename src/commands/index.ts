@@ -6,7 +6,7 @@ export * from './generator'
 
 export * from './downloadZip'
 
-export * from './listTemplate'
+export * from './listTemplates'
 
 export * from './removeTemplate'
 

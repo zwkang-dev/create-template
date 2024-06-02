@@ -4,7 +4,7 @@ import { listTemplates } from '../listTemplates'
 interface Args {
 }
 
-export const listTemplateCommand: YargsCommandModule<{}, Args> = {
+export const listTemplatesCommand: YargsCommandModule<{}, Args> = {
   command: 'list-templates [path]',
   describe: 'list templates',
   builder: args => args,
