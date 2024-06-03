@@ -26,6 +26,8 @@ export interface IConfig<Result extends Answers = any> {
   ) => Promise<string> | string
 
   exclude: string[]
+
+  transformAnswer: <T>(answers: Result) => T
 }
 
 export async function defineConfig<T extends Answers = any>(config: Partial<IConfig<T>>) {

@@ -56,6 +56,10 @@ const __current = process.cwd()
 
 function noop() {}
 
+function justReturn(args: any) {
+  return args
+}
+
 const defaultConfig: Partial<IConfig> = {
   prompts: [],
   schema: undefined,
@@ -100,9 +104,9 @@ export async function createTemplate(props: IProps) {
   const filterEntryFiles = entryFiles.filter(
     filters,
   )
-  const { prompts = [], schema = null, onEnd, customReplace, name } = configFile
+  const { prompts = [], schema = null, onEnd, customReplace, name, transformAnswer = justReturn } = configFile
   const cacheAnswer = get<Record<string, any>>(name!) || {}
-  const answer = await inquirer.prompt(
+  let answer = await inquirer.prompt(
     travelPromptTreeAppendResult(handleFnOrValue(prompts), cacheAnswer),
   )
   set(name!, answer)
@@ -114,6 +118,8 @@ export async function createTemplate(props: IProps) {
       return
     }
   }
+
+  answer = transformAnswer(answer)
 
   const outputFolder = path.join(__current, outputDir)
   if (emptyDest)
@@ -129,14 +135,15 @@ export async function createTemplate(props: IProps) {
     const entryFilePath = path.join(entryFolder, item)
     const outputFilePath = path.join(outputFolder, item)
     const isDir = await fs.stat(entryFilePath)
+    const actualFilePath = customReplace ? await customReplace(entryFilePath, answer) : await replaceContent(entryFilePath, answer)
     if (isDir.isDirectory()) {
       await fs.mkdir(outputFilePath)
     }
     else {
       const content = await fs.readFile(entryFilePath, 'utf-8')
-      await fsExtra.ensureFile(outputFilePath)
+      await fsExtra.ensureFile(actualFilePath)
       const compiledContent = customReplace ? await customReplace(content, answer) : await replaceContent(content, answer)
-      await fs.writeFile(outputFilePath, compiledContent)
+      await fs.writeFile(actualFilePath, compiledContent)
     }
   }
 
