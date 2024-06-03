@@ -39,7 +39,10 @@
     "release": "pnpm publish",
     "bump:version": "bumpp",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "pnpm run build"
+    "prepublishOnly": "pnpm run build",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
   },
   "dependencies": {
     "adm-zip": "^0.5.10",
@@ -61,6 +64,7 @@
     "simple-git": "^3.22.0",
     "tapable": "^2.2.1",
     "update-notifier": "^7.0.0",
+    "vitepress": "^1.2.2",
     "yargs": "^17.7.2",
     "zod": "^3.22.4"
   },
