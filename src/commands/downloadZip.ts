@@ -1,4 +1,3 @@
-/* eslint-disable ts/ban-types */
 import type { CommandModule as YargsCommandModule } from 'yargs'
 import { downloadZip } from '../download-zip-repo'
 
