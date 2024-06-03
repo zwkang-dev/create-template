@@ -1,7 +1,7 @@
 import { createRequire } from 'node:module'
-import path, { basename, extname } from 'node:path'
+import path, { extname } from 'node:path'
 import { build } from 'esbuild'
-import { DEFAULT_OUTPUT_FILE, dirname } from './constant'
+import { DEFAULT_OUTPUT_FILE } from './constant'
 import type { IConfig } from './defineConfig'
 
 const _require = createRequire(import.meta.url)
