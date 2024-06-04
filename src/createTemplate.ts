@@ -135,7 +135,7 @@ export async function createTemplate(props: IProps) {
     const entryFilePath = path.join(entryFolder, item)
     const outputFilePath = path.join(outputFolder, item)
     const isDir = await fs.stat(entryFilePath)
-    const actualFilePath = customReplace ? await customReplace(entryFilePath, answer) : await replaceContent(entryFilePath, answer)
+    const actualFilePath = customReplace ? await customReplace(outputFilePath, answer) : await replaceContent(outputFilePath, answer)
     if (isDir.isDirectory()) {
       await fs.mkdir(outputFilePath)
     }
