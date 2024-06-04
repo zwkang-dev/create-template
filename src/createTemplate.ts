@@ -23,6 +23,7 @@ interface IProps {
   outputDir: string
   emptyDest?: boolean
   internal?: boolean
+  ignoreInstall?: boolean
 }
 
 // const __filename = fileURLToPath(import.meta.url)
@@ -86,7 +87,7 @@ function handleFnOrValue<T>(cb: T) {
 
 export async function createTemplate(props: IProps) {
   logger.greet(`\n🚀  Welcome to use zwkang generator\n`)
-  const { entry, outputDir, emptyDest = true, internal = false } = props
+  const { entry, outputDir, emptyDest = true, internal = false, ignoreInstall = false } = props
   const entryFolder = await resolveTemplate(entry, { internal })
   const entryFiles = await globby(['**/*'], {
     cwd: entryFolder,
@@ -147,7 +148,7 @@ export async function createTemplate(props: IProps) {
     }
   }
 
-  const { packageManager = 'pnpm' } = await checkInstall({ dest: outputFolder })
+  const { packageManager = 'pnpm' } = await checkInstall({ dest: outputFolder, ignore: ignoreInstall })
   console.log()
   logger.success(`🚀  Successfully created ${colors.green(entry)}\n`)
   logger.success(`Run ${colors.green(`cd ${outputDir} && ${packageManager} && ${packageManager} dev`)} to start development!\n`)

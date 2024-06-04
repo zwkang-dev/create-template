@@ -34,8 +34,10 @@ interface Result {
   packageManager: 'npm' | 'yarn' | 'pnpm'
 }
 
-export async function checkInstall(opts: { dest: string }) {
-  const { dest } = opts
+export async function checkInstall(opts: { dest: string, ignore: boolean }) {
+  const { dest, ignore } = opts
+  if (ignore)
+    return { packageManager: 'pnpm' }
   const result = await inquirer.prompt(schema) as Result
   if (result.install) {
     const ins = ora(`下载依赖`).start()
