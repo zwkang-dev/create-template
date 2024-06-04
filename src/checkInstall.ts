@@ -36,6 +36,7 @@ interface Result {
 
 export async function checkInstall(opts: { dest: string, ignore: boolean }) {
   const { dest, ignore } = opts
+  // use default package managers
   if (ignore)
     return { packageManager: 'pnpm' }
   const result = await inquirer.prompt(schema) as Result
