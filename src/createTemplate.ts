@@ -85,32 +85,42 @@ function handleFnOrValue<T>(cb: T) {
   return cb
 }
 
+/**
+ * create generator template
+ * @param props
+ * @returns
+ */
 export async function createTemplate(props: IProps) {
   logger.greet(`\n🚀  Welcome to use zwkang generator\n`)
   const { entry, outputDir, emptyDest = true, internal = false, ignoreInstall = false } = props
+
+  // to make sure template entry
   const entryFolder = await resolveTemplate(entry, { internal })
   const entryFiles = await globby(['**/*'], {
     cwd: entryFolder,
     gitignore: true,
     dot: true,
   })
+
+  // to locate config file
   let configFile = defaultConfig
   const configFilePath = await resolveConfigFile(entryFolder)
-
   if (configFilePath !== null)
     configFile = await initTemplate({ configFile: configFilePath })
 
+  // to filter ignore resolve template file
   const filters = createFilter([...IGNORE_GLOB, ...configFile.exclude || []])
-
-  const filterEntryFiles = entryFiles.filter(
-    filters,
-  )
+  const filterEntryFiles = entryFiles.filter(filters)
   const { prompts = [], schema = null, onEnd, customReplace, name, transformAnswer = justReturn } = configFile
+
+  // try to cache user prompt answers
   const cacheAnswer = get<Record<string, any>>(name!) || {}
   let answer = await inquirer.prompt(
     travelPromptTreeAppendResult(handleFnOrValue(prompts), cacheAnswer),
   )
   set(name!, answer)
+
+  // if schema is not null, to validate answer
   if (schema) {
     const validator = schema.safeParse(answer)
 
@@ -122,6 +132,7 @@ export async function createTemplate(props: IProps) {
 
   answer = transformAnswer(answer)
 
+  // to locate output folder
   const outputFolder = path.join(__current, outputDir)
   if (emptyDest)
     await fsExtra.emptyDir(outputFolder)
@@ -136,6 +147,7 @@ export async function createTemplate(props: IProps) {
     const entryFilePath = path.join(entryFolder, item)
     const outputFilePath = path.join(outputFolder, item)
     const isDir = await fs.stat(entryFilePath)
+    // support transform file name using answer data
     const actualFilePath = customReplace ? await customReplace(outputFilePath, answer) : await replaceContent(outputFilePath, answer)
     if (isDir.isDirectory()) {
       await fs.mkdir(outputFilePath)
@@ -143,7 +155,9 @@ export async function createTemplate(props: IProps) {
     else {
       const content = await fs.readFile(entryFilePath, 'utf-8')
       await fsExtra.ensureFile(actualFilePath)
+      // support custom transform for file content
       const compiledContent = customReplace ? await customReplace(content, answer) : await replaceContent(content, answer)
+      // write to target path
       await fs.writeFile(actualFilePath, compiledContent)
     }
   }
