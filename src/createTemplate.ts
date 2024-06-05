@@ -111,7 +111,7 @@ export async function createTemplate(props: IProps) {
   // to filter ignore resolve template file
   const filters = createFilter([...IGNORE_GLOB, ...configFile.exclude || []])
   const filterEntryFiles = entryFiles.filter(filters)
-  const { prompts = [], schema = null, onEnd, customReplace, name, transformAnswer = justReturn } = configFile
+  const { prompts = [], schema = null, onEnd, customReplace, name, transformAnswer = justReturn, transformFileNames = justReturn } = configFile
 
   // try to cache user prompt answers
   const cacheAnswer = get<Record<string, any>>(name!) || {}
@@ -145,20 +145,20 @@ export async function createTemplate(props: IProps) {
       continue
 
     const entryFilePath = path.join(entryFolder, item)
-    const outputFilePath = path.join(outputFolder, item)
+    const transformedItemName = await transformFileNames(item, answer)
+    const outputFilePath = path.join(outputFolder, transformedItemName)
     const isDir = await fs.stat(entryFilePath)
     // support transform file name using answer data
-    const actualFilePath = customReplace ? await customReplace(outputFilePath, answer) : await replaceContent(outputFilePath, answer)
     if (isDir.isDirectory()) {
       await fs.mkdir(outputFilePath)
     }
     else {
       const content = await fs.readFile(entryFilePath, 'utf-8')
-      await fsExtra.ensureFile(actualFilePath)
+      await fsExtra.ensureFile(outputFilePath)
       // support custom transform for file content
       const compiledContent = customReplace ? await customReplace(content, answer) : await replaceContent(content, answer)
       // write to target path
-      await fs.writeFile(actualFilePath, compiledContent)
+      await fs.writeFile(outputFilePath, compiledContent)
     }
   }
 

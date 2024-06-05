@@ -28,6 +28,8 @@ export interface IConfig<Result extends Answers = any> {
   exclude: string[]
 
   transformAnswer: <T>(answers: Result) => T
+
+  transformFileNames?: (fileName: string, answers: Result) => Promise<string> | string
 }
 
 export async function defineConfig<T extends Answers = any>(config: Partial<IConfig<T>>) {
