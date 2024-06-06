@@ -2,6 +2,8 @@ import type { Schema } from 'zod'
 
 import type { Answers, QuestionCollection } from 'inquirer'
 
+import type { Colors } from 'picocolors/types'
+
 export interface IConfig<Result extends Answers = any> {
   name: string
 
@@ -30,6 +32,8 @@ export interface IConfig<Result extends Answers = any> {
   transformAnswer: <T>(answers: Result) => T
 
   transformFileNames?: (fileName: string, answers: Result) => Promise<string> | string
+
+  successLogs: (colors: Colors, opts: Result & { pkgManager: string, dest: string }) => string[]
 }
 
 export async function defineConfig<T extends Answers = any>(config: Partial<IConfig<T>>) {

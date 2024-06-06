@@ -111,7 +111,7 @@ export async function createTemplate(props: IProps) {
   // to filter ignore resolve template file
   const filters = createFilter([...IGNORE_GLOB, ...configFile.exclude || []])
   const filterEntryFiles = entryFiles.filter(filters)
-  const { prompts = [], schema = null, onEnd, customReplace, name, transformAnswer = justReturn, transformFileNames = justReturn } = configFile
+  const { prompts = [], schema = null, onEnd, customReplace, name, transformAnswer = justReturn, transformFileNames = justReturn, successLogs } = configFile
 
   // try to cache user prompt answers
   const cacheAnswer = get<Record<string, any>>(name!) || {}
@@ -164,8 +164,17 @@ export async function createTemplate(props: IProps) {
 
   const { packageManager = 'pnpm' } = await checkInstall({ dest: outputFolder, ignore: ignoreInstall })
   console.log()
-  logger.success(`🚀  Successfully created ${colors.green(entry)}\n`)
-  logger.success(`Run ${colors.green(`cd ${outputDir} && ${packageManager} && ${packageManager} dev`)} to start development!\n`)
+  if (successLogs) {
+    successLogs(colors, {
+      ...answer,
+      dest: outputDir,
+      pkgManager: packageManager,
+    }).map(logger.success)
+  }
+  else {
+    logger.success(`🚀  Successfully created ${colors.green(entry)}\n`)
+    logger.success(`Run ${colors.green(`cd ${outputDir} && ${packageManager} && ${packageManager} dev`)} to start development!\n`)
+  }
   if (onEnd)
     onEnd?.()
 }
