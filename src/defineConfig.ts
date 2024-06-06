@@ -34,6 +34,9 @@ export interface IConfig<Result extends Answers = any> {
   transformFileNames?: (fileName: string, answers: Result) => Promise<string> | string
 
   successLogs?: (colors: Colors, opts: Result & { pkgManager: string, dest: string }) => string[]
+
+  // easy to set some field to package.json
+  pkg?: (args: Result) => Record<string, any>
 }
 
 export async function defineConfig<T extends Answers = any>(config: Partial<IConfig<T>>) {

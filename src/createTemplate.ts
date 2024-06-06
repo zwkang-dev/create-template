@@ -111,7 +111,7 @@ export async function createTemplate(props: IProps) {
   // to filter ignore resolve template file
   const filters = createFilter([...IGNORE_GLOB, ...configFile.exclude || []])
   const filterEntryFiles = entryFiles.filter(filters)
-  const { prompts = [], schema = null, onEnd, customReplace, name, transformAnswer = justReturn, transformFileNames = justReturn, successLogs } = configFile
+  const { prompts = [], schema = null, onEnd, customReplace, name, transformAnswer = justReturn, transformFileNames = justReturn, successLogs, pkg = noop } = configFile
 
   // try to cache user prompt answers
   const cacheAnswer = get<Record<string, any>>(name!) || {}
@@ -157,6 +157,22 @@ export async function createTemplate(props: IProps) {
       await fsExtra.ensureFile(outputFilePath)
       // support custom transform for file content
       const compiledContent = customReplace ? await customReplace(content, answer) : await replaceContent(content, answer)
+      if (item.endsWith('package.json')) {
+        const pkgReplaceResult = pkg(answer)
+        if (pkgReplaceResult) {
+          const pkgData = JSON.parse(
+            await fs.readFile(path.join(compiledContent, `package.json`), 'utf-8'),
+          )
+
+          const content = JSON.stringify({
+            ...pkgData,
+            ...pkgReplaceResult,
+          }, null, 2)
+
+          await fs.writeFile(outputFilePath, `${content}\n`)
+        }
+      }
+
       // write to target path
       await fs.writeFile(outputFilePath, compiledContent)
     }
