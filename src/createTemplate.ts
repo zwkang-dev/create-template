@@ -177,7 +177,6 @@ export async function createTemplate(props: IProps) {
   }
 
   const { packageManager = 'pnpm' } = await checkInstall({ dest: outputFolder, ignore: ignoreInstall })
-  console.log()
   if (successLogs) {
     successLogs(colors, {
       ...answer,
