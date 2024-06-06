@@ -20,6 +20,6 @@ export const SETTING_FILE = 'zwkang.config.ts'
 
 export const OUTPUT_FILE = '.out.cjs'
 
-export const IGNORE_FILES = [SETTING_FILE, OUTPUT_FILE]
+export const IGNORE_FILES = [SETTING_FILE, OUTPUT_FILE, DEFAULT_OUTPUT_FILE]
 
 export const IGNORE_GLOB = ['node_modules', '.git']

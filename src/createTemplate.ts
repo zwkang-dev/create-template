@@ -108,10 +108,11 @@ export async function createTemplate(props: IProps) {
   if (configFilePath !== null)
     configFile = await initTemplate({ configFile: configFilePath })
 
+  const { prompts = [], exclude = [], schema = null, onEnd, customReplace, name, transformAnswer = justReturn, transformFileNames = justReturn, successLogs, pkg = noop } = configFile
+
   // to filter ignore resolve template file
-  const filters = createFilter([...IGNORE_GLOB, ...configFile.exclude || []])
+  const filters = createFilter([...IGNORE_GLOB, ...exclude])
   const filterEntryFiles = entryFiles.filter(filters)
-  const { prompts = [], schema = null, onEnd, customReplace, name, transformAnswer = justReturn, transformFileNames = justReturn, successLogs, pkg = noop } = configFile
 
   // try to cache user prompt answers
   const cacheAnswer = get<Record<string, any>>(name!) || {}
@@ -156,23 +157,20 @@ export async function createTemplate(props: IProps) {
       const content = await fs.readFile(entryFilePath, 'utf-8')
       await fsExtra.ensureFile(outputFilePath)
       // support custom transform for file content
-      const compiledContent = customReplace ? await customReplace(content, answer) : await replaceContent(content, answer)
-      if (item.endsWith('package.json')) {
+      let compiledContent = customReplace ? await customReplace(content, answer) : await replaceContent(content, answer)
+
+      if (item === 'package.json') {
         const pkgReplaceResult = pkg(answer)
         if (pkgReplaceResult) {
-          const pkgData = JSON.parse(
-            await fs.readFile(path.join(compiledContent, `package.json`), 'utf-8'),
-          )
+          const pkgData = JSON.parse(compiledContent)
 
-          const content = JSON.stringify({
+          const replacedContent = JSON.stringify({
             ...pkgData,
             ...pkgReplaceResult,
           }, null, 2)
-
-          await fs.writeFile(outputFilePath, `${content}\n`)
+          compiledContent = `${replacedContent}\n`
         }
       }
-
       // write to target path
       await fs.writeFile(outputFilePath, compiledContent)
     }
