@@ -19,8 +19,8 @@
   "bugs": "https://github.com/zwkang/pkg-name/issues",
   "keywords": [],
   "sideEffects": false,
-  "main": "./dist/index.mjs",
-  "module": "./dist/index.mjs",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
     "zct": "bin/entry.mjs",
